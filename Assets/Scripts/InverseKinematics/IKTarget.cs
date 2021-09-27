@@ -20,36 +20,7 @@ namespace InverseKinematics
             joints = new List<Transform>();
             PopulateJoints(effector, joints, root);
         }
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                steps++;
-                
-                if (steps > joints.Count - 1)
-                    steps = 2;
-                
-                Transform joint = joints[steps];
-                 
-                Vector3 jointPosition = joint.position;
-                Vector3 nextJoint = joints[steps - 1].position;
-                Vector3 followingJoint = joints[steps - 2].position;
-                
-                Vector3 normal = (followingJoint - jointPosition).normalized;
-                Vector3 projectedJoint = GetProjection(normal, jointPosition, nextJoint);
-                Vector3 projectedPole = GetProjection(normal, jointPosition, pole.position);
-                
-                float angle = GetAngleOnAxis(projectedJoint, projectedPole, normal);
-                Quaternion poleOffset = Quaternion.AngleAxis(angle, normal);
-                Quaternion oppositePoleOffset = Quaternion.AngleAxis(-angle, normal);
-                
-                joint.rotation = poleOffset * joint.rotation;
-                if(steps != 2)
-                    joints[steps - 2].rotation = oppositePoleOffset * joints[steps - 2].rotation;
-            }
-        }
-
+        
         private void LateUpdate()
         {
             CalculateIK(transform.position, pole.position);
